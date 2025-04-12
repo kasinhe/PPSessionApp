@@ -11,9 +11,9 @@ on:
     # Change this value
     inputs: 
       solution_name:
-      description: 'name of the solution to worked on from Power Platform' 
-      required: true 
-      default: 'Session'
+        description: 'name of the solution to worked on from Power Platform' 
+        required: true 
+        default: 'Session'
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   export-from-dev:
