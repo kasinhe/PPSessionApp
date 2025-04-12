@@ -26,6 +26,9 @@ on:
       required: true
       default: solutions/
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
+env:
+  ENVIRONMENT_URL: https://orgbd70401a.crm5.dynamics.com/
+  USERNAME: kasinhe@vicker.cn
 jobs:
   export-from-dev:
     runs-on: windows-latest
