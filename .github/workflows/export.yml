@@ -27,22 +27,43 @@ on:
       default: solutions/
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+  export-from-dev:
+    runs-on: windows-latest
+    env:
+      RUNNER DEBUG: 1
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
-
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+    - uses: actions/checkout@v2 
+      with:
+        lfs: true
+    
+    - name: who-am-i action
+      uses: microsoft/powerplatform-actions/who-am-i@0.4.0 
+      with:
+        environment-url: ${{env.ENYIRONMENT_URL}} 
+        user-name: ${{env.USERNAME}}
+        password-secret: ${{ secrets.password }}
+    
+    - name: export-solution action
+      uses: microsoft/ -actions /export -solution@0.4.0 
+      with:
+        environment-url: ${{env.ENVIRONMENT_URL}} 
+        user-name: ${{env.USERNAME}}
+        password-secret: ${{ secrets.password }}
+        solution-name: ${{ github.event.inputs.solution_name }}
+        solution-output -file: ${{ github.event .inputs .solution_exported_folder}}/${{ github.event.inputs.solution_name }}.zip
+    
+    - name: unpack-solution action
+      uses: microsoft/powerplatform-actions /unpack-solution@0.4.0 
+      with:
+        solution-file: ${{ github.event.inputs.solution_exported_folder}}/${{ github.event.inputs.solution_name }}.zip 
+        solution-folder: ${{ github.event.inputs.solution_folder}}/${{ github.event.inputs.solution_name }}
+        solution-type: 'Unmanaged'
+        overwrite-files: true
+    
+    - name: branch-solution, prepare it for a PullRequest
+      uses: microsoft/powerplatform-actions/branch-solution@0.4.0 
+      with:
+        solution-folder: ${{ github.event.inputs.solution_folder}}/${{ github.event.inputs.solution_name }}
+        solution-target-folder: ${{ github.event.inputs.solution_target_folder}}/${{ github.event .inputs.solution_name }} 
+        repo-token: ${{ secrets.GITHUB_TOKEN}} 
+        allow-empty-commit: true
